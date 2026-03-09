@@ -1,0 +1,6 @@
+PORT=8070
+MONGODB_URL=mongodb+srv://(username):(password)@my-app-cluster.mcuvne5.mongodb.net/NotePad_db?retryWrites=true&w=majority&appName=my-app-cluster
+JWT_SECRET=8f2c3d5e7b9a1c4d6f8a2b0c3d5e7b9a1c4d6f8a2b0c3d5e7b9a1c4d6f8a2b0c
+JWT_EXPIRES_IN=90d
+
+GOOGLE_CLIENT_ID = your client id
