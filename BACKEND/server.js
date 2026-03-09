@@ -2,11 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
+dotenv.config();
+
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8070;
@@ -14,7 +16,10 @@ const PORT = process.env.PORT || 8070;
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get("/api/test", (req, res) => res.json({ message: "API is reachable" }));
+
 // Routes
+
 app.use("/api/users", userRoutes);
 app.use("/api/notes", noteRoutes);
 

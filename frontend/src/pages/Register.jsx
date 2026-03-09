@@ -2,16 +2,32 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { UserPlus, User, Lock, Mail } from 'lucide-react';
+import { UserPlus, User, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const { register, googleLogin } = useAuth();
     const navigate = useNavigate();
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setLoading(true);
+        setError('');
+        try {
+            await googleLogin(credentialResponse.credential);
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Google signup failed');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -84,14 +100,21 @@ const Register = () => {
                         <div className="relative">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 required
                                 minLength={8}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full rounded-2xl bg-white/5 border border-white/10 py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-mint/50 transition-all font-light"
+                                className="w-full rounded-2xl bg-white/5 border border-white/10 py-3 pl-12 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-mint/50 transition-all font-light"
                                 placeholder="••••••••"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
                         </div>
                     </div>
 
@@ -102,6 +125,25 @@ const Register = () => {
                     >
                         {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
+
+                    <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-white/10"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-[#242424] px-2 text-white/40">Or register with</span>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => setError('Google signup failed')}
+                            theme="dark"
+                            shape="pill"
+                            width="250"
+                        />
+                    </div>
                 </form>
 
                 <p className="mt-8 text-center text-sm text-white/60">
